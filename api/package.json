@@ -1,0 +1,31 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon server.js",
+    "dev": "nodemon -w src --exec \"babel-node server.js --presets env\""
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "helmet": "^3.15.1",
+    "http-errors": "~1.6.2",
+    "jsonwebtoken": "^8.5.0",
+    "morgan": "~1.9.0",
+    "mysql": "^2.16.0",
+    "nodemon": "^1.18.10",
+    "pug": "^2.0.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-watch": "^7.0.0",
+    "eslint": "^5.14.1",
+    "eslint-plugin-node": "^8.0.1"
+  }
+}
