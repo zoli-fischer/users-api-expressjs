@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon server.js",
-    "dev": "nodemon -w src --exec \"babel-node server.js --presets env\""
+    "prod": "NODE_ENV=prod nodemon server.js",
+    "dev": "NODE_ENV=dev nodemon -w src --exec \"babel-node server.js --presets env\""
   },
   "engines": {
     "node": ">=6.0.0"
