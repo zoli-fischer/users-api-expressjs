@@ -2,11 +2,9 @@ const mysql = require("mysql");
 const databaseJSON = require('../../db/database.json'); // eslint-disable-line node/no-unpublished-require
 const config = databaseJSON[process.env.NODE_ENV];
 
-const database = {};
-
 let connection = null;
 
-database.connection = () => {
+module.exports = () => {
     if (!connection) {
         connection = mysql.createConnection({
             host: config.host,
@@ -19,9 +17,3 @@ database.connection = () => {
     }
     return connection;
 }
-
-database.close = () => {
-    // connection.end();
-}
-
-module.exports = database;

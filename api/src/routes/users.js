@@ -1,24 +1,18 @@
 const express = require('express');
-const auth = require('../auth');
-const database = require('../database');
+const isAuthorized = require('../auth');
+const response = require('../response');
+const users = require('../classes/users');
 const router = express.Router();
 
-/* GET users listing. */
-router.get('/', (req, res, next) => {
-  if (auth.isRequestAuthorized(req, res)) {
-    database.connection().query("SELECT * from users", function (error, results, fields) {
-      if (error) {
-        res.send(JSON.stringify({ "status": 500, "error": error, "response": null }));
-        //If there is error, we send the error in the error section with 500 status
-      } else {
-        res.send(JSON.stringify({ "status": 200, "error": null, "response": results }));
-        //If there is no error, all is good and response is 200OK.
-      }
-      database.close();
+/* GET users listing */
+router.get('/', isAuthorized, (req, res, next) => {
+    users.getAll()
+    .then((results) => {
+        response.success(res, results);
+    })
+    .catch((error) => {
+        response.error(res, 500, error);
     });
-  } else {
-    auth.sendUnauthorizedResponse(res);
-  }
 });
 
 module.exports = router;

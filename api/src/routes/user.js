@@ -1,57 +1,109 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
-const database = require('../database');
+const isAuthorized = require('../auth');
+const response = require('../response');
+const users = require('../classes/users');
 const router = express.Router();
 
-/* Get user token */
-router.get('/', (req, res, next) => {
-    const token = req.signedCookies.token;
-    jwt.verify(token, config.secret, (err, decoded) => {
-        if (err) {
-            res.send(JSON.stringify({ "status": 500, "error": "Failed to authenticate token.", "response": null }));
-        }
-        res.send(JSON.stringify({ "status": 200, "error": null, "response": { "token": token, "user_id": decoded.id } }));
+router.param('user_id', function(req, res, next, id) {
+    req.user = null;
+    users.getById(id)
+    .then(user => {
+        req.user = user;
+        next();
+    })
+    .catch(error => {
+        response.error(res, 500, error);
     });
 });
 
-/* Post login */
-router.post('/auth', (req, res, next) => {
-    database.connection().query("SELECT id, email FROM users WHERE email = ? AND password = PASSWORD(?)", [req.body.email, req.body.password], function (error, results, fields) {
-        if (error || results.length === 0) {
-            res.send(JSON.stringify({ "status": 500, "error": error, "response": null }));
-            //If there is error, we send the error in the error section with 500 status
+/* Get user authToken */
+router.get('/token', (req, res, next) => {
+    const authToken = req.signedCookies[config.authToken.cookieName];
+    jwt.verify(authToken, config.secret, (error, decoded) => {
+        if (error) {
+            response.error(res, 500, "Failed to authenticate token.");
         } else {
-            const user = results[0];
-
-            // create a token
-            const token = jwt.sign({ id: user.id }, config.secret, {
-                expiresIn: config.token.expires,
-            });
-
-            res.cookie("token", token, { 
-                expires: new Date(Date.now() + config.token.cookieExpires), // expires in 14 day
-                httpOnly: true,
-                signed: true,
-            });
-
-            res.send(JSON.stringify({ "status": 200, "error": null, "response": {
-                user: user,
-                token: token,
-            }}));
-            //If there is no error, all is good and response is 200OK.
+            users.getById(decoded.id)
+                .then(user => {
+                    // renew authToken cookie
+                    res.cookie(config.authToken.cookieName, authToken, { 
+                        expires: new Date(Date.now() + config.authToken.cookieExpires), // expires in 14 day
+                        httpOnly: true,
+                        signed: true,
+                    });
+                    response.success(res, {
+                        [config.authToken.cookieName]: authToken, 
+                        userId: user.data.id, 
+                    });
+                })
+                .catch(error => {
+                    response.error(res, 500, error);
+                });
         }
-        database.close();
     });
 });
 
-/* Logout user */
-router.get('/logout', (req, res, next) => {
-    res.cookie("token", "", {
-        expires: new Date(Date.now() - 1), // set expired
-    });
+/* Create user authToken from email and password */
+router.post('/signin', (req, res, next) => {
+    users.getByAuthCredential(req.body.email, req.body.password)
+    .then(user => {
+        // create authToken
+        const authToken = user.createAuthToken();
 
-    res.send(JSON.stringify({ "status": 200, "error": null, "response": null }));
+        res.cookie(config.authToken.cookieName, authToken, { 
+            expires: new Date(Date.now() + config.authToken.cookieExpires), // expires in 14 day
+            httpOnly: true,
+            signed: true,
+        });
+
+        response.success(res, {
+            userId: user.data.id,
+            authToken: authToken,
+        });
+    })
+    .catch(error => {
+        response.erro(res, 500, error);
+    });
+});
+
+/* Invalidate user authToken */
+router.get('/signout', (req, res, next) => {
+    res.cookie(config.authToken.cookieName, "", {
+        expires: new Date(Date.now() - 1), // set expired
+        httpOnly: true,
+        signed: true,
+    });
+    response.success(res);
+});
+
+
+/* Create new user */
+router.put('/', isAuthorized, (req, res, next) => {
+    users.create({
+        email: req.body.email,
+        password:  req.body.password,
+    })
+    .then(user => {
+        response.success(res, {
+            userId: user.data.id,
+        });
+    })
+    .catch(error => {
+        response.error(res, 500, error);
+    });
+});
+
+/* Delete user by id */
+router.delete('/:user_id', isAuthorized, (req, res, next) => {
+    users.delete(req.user.data.id)
+    .then(() => {
+        response.success(res);
+    })
+    .catch(error => {
+        response.error(res, 500, error);
+    });
 });
 
 module.exports = router;
