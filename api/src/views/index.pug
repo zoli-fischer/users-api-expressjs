@@ -1,5 +1,49 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1 Users api
+  h2 Authentification
+  p
+    div
+      b Get user authentification token with email and password
+    code POST /auth 
+    div
+    code Body: { email, password }
+  p
+    div
+      b Get user authentification token from session
+    code GET /auth
+  p
+    div
+      b Remove user from session
+    code DELETE /auth
+  h2 User
+  p
+    div
+      b Create a new user
+    code PUT /user
+    div
+    code Body: { email, password }
+    div
+    code Authorization: Bearer :token
+  p
+    div
+      b Update a user by id
+    code PUT /user/:user_id
+    div
+    code Body: { email, password }
+    div
+    code Authorization: Bearer :token
+  p
+    div
+      b Deletea user by id
+    code DELETE /user/:user_id
+    div
+    code Authorization: Bearer :token 
+  h2 Users
+  p
+    div
+      b Get list of all users
+    code GET /users
+    div
+    code Authorization: Bearer :token 

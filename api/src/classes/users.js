@@ -10,23 +10,11 @@ class users {
                 fields.push('`' + key + '`');
                 values.push(data[key]);
             });
-            database().query("INSERT INTO users (" + fields.join(",") + ") VALUES (?) ", [values], (error, results, fields) => {
+            database().query("INSERT INTO users (" + fields.join(",") + ") VALUES (?) ", [values], (error, result, fields) => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(results);
-                }
-            });
-        });
-    }
-
-    static delete(id) {
-        return new Promise((resolve, reject) => {
-            database().query("DELETE FROM users WHERE id = ?", [id], (error, results, fields) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(results);
+                    resolve(result.insertId);
                 }
             });
         });
