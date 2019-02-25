@@ -34,6 +34,7 @@ router.get('/', (req, res, next) => {
 
 /* Create user authToken from email and password */
 router.post('/', (req, res, next) => {
+    console.log(req.body.email, req.body.password);
     users.getByAuthCredential(req.body.email, req.body.password)
     .then(user => {
         // create authToken
@@ -51,7 +52,7 @@ router.post('/', (req, res, next) => {
         });
     })
     .catch(error => {
-        response.erro(res, 500, error);
+        response.error(res, 500, error);
     });
 });
 
