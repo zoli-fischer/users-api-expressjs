@@ -7,10 +7,10 @@ import PublicRoute from 'Containers/PublicRoute/PublicRoute';
 import PrivateRoute from 'Containers/PrivateRoute/PrivateRoute';
 
 const Login = AsyncComponent(() => import('Containers/Pages/Login/Login'));
-const Users = AsyncComponent(() => import('Pages/Users/Users'));
+const Users = AsyncComponent(() => import('Containers/Pages/Users/Users'));
 const NotFound = AsyncComponent(() => import('Pages/NotFound/NotFound'));
 
-export default function App() {
+export default function App(props) {
     return (
         <Router>
             <Switch>

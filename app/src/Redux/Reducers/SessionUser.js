@@ -1,14 +1,15 @@
-import {
-    SET_TOKEN,
-} from 'Actions/SessionUser';
+import { SET_DATA } from 'Actions/SessionUser';
+import { getStoredUserData, getEmptyUserData, setStoredUserData } from 'Globals/SessionUser';
 
 const sessionUser = (state = {
-    token: null,
+    data: getStoredUserData(),
 }, action) => {
     switch (action.type) {
-    case SET_TOKEN:
+    case SET_DATA:
+        const data = Object.assign({}, getEmptyUserData(), action.data);
+        setStoredUserData(data);
         return Object.assign({}, state, {
-            token: action.token,
+            data,
         });
     default:
         return state;

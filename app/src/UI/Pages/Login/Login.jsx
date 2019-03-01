@@ -10,7 +10,10 @@ export default function name(props) {
         event.preventDefault();
         createAPI().auth(email, password)
             .then(response => {
-                props.setUserToken(response.response.authToken);
+                props.setUserData({
+                    token: response.response.authToken,
+                    id: response.response.userId,
+                });
             })
             .catch(response => {
                 setShowError(true);

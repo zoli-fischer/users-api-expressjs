@@ -3,7 +3,7 @@ import PrivateRoute from 'Components/PrivateRoute/PrivateRoute';
 
 function mapStateToProps(state) {
     return {
-        isSessionUser: !!state.sessionUser.token,
+        isSessionUser: !!state.sessionUser.data.token,
     };
 };
 
