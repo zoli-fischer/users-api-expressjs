@@ -6,7 +6,7 @@ import AsyncComponent from 'Components/AsyncComponent/AsyncComponent';
 import PublicRoute from 'Containers/PublicRoute/PublicRoute';
 import PrivateRoute from 'Containers/PrivateRoute/PrivateRoute';
 
-const Login = AsyncComponent(() => import('Pages/Login/Login'));
+const Login = AsyncComponent(() => import('Containers/Pages/Login/Login'));
 const Users = AsyncComponent(() => import('Pages/Users/Users'));
 const NotFound = AsyncComponent(() => import('Pages/NotFound/NotFound'));
 

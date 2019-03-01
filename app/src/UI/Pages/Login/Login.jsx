@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createAPI } from 'Factories/API';
 
-export default function name() {
+export default function name(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showError, setShowError] = useState(false);
@@ -10,7 +10,7 @@ export default function name() {
         event.preventDefault();
         createAPI().auth(email, password)
             .then(response => {
-                console.log('success', response);
+                props.setUserToken(response.response.authToken);
             })
             .catch(response => {
                 setShowError(true);
@@ -22,7 +22,7 @@ export default function name() {
         <div className="middle">
             <div className="container">
                 <div className="row">
-                    <div className="col-md-4 offset-md-4">
+                    <div className="col-10 offset-1 col-md-8 offset-md-2 col-lg-4 offset-lg-4">
                         <form onSubmit={onSubmit}>
                             <div className="form-group">
                                 <label>Email address</label>

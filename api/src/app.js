@@ -5,6 +5,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const helmet = require('helmet');
+const frameguard = require('frameguard');
 const config = require('./config');
 
 const indexRouter = require('./routes/index');
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(config.secret));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({ origin: '*' }));
+app.use(frameguard())  // defaults to sameorigin
 
 app.use('/', indexRouter);
 app.use('/auth', authRouter);
