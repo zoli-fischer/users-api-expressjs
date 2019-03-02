@@ -14,6 +14,28 @@ export default class API {
         });
     }
 
+    users() {
+        return this.fetch('/users', {
+            method: 'GET',
+        });
+    }
+
+    putUser(email, password) {
+        return this.fetch('/user', {
+            method: 'PUT',
+            body: JSON.stringify({
+                email,
+                password,
+            }),
+        });
+    }
+
+    deleteUser(id) {
+        return this.fetch(`/user/${id}`, {
+            method: 'DELETE',
+        });
+    }
+
     /**
      * Fetch data from API endpoint
      * Endpoint: /authenticate/userpasshmac
@@ -25,6 +47,7 @@ export default class API {
         const optionsAssigned = Object.assign({
             cache: 'no-cache',
             redirect: 'follow',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${this.authToken}`,

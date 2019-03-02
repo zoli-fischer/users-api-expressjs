@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const database = require('../database');
 const user = require('./user');
 
@@ -8,7 +9,11 @@ class users {
             const values = [];
             Object.keys(data).forEach(key => {
                 fields.push('`' + key + '`');
-                values.push(data[key]);
+                if (key === 'password') {
+                    values.push(bcrypt.hashSync(data[key], 10));
+                } else {
+                    values.push(data[key]);
+                }
             });
             database().query("INSERT INTO users (" + fields.join(",") + ") VALUES (?) ", [values], (error, result, fields) => {
                 if (error) {
@@ -48,13 +53,17 @@ class users {
 
     static getByAuthCredential(email, password) {
         return new Promise((resolve, reject) => {
-            database().query("SELECT * FROM users WHERE email = ? AND password = PASSWORD(?) LIMIT 1", [email, password], (error, results, fields) => {
+            database().query("SELECT id, email, password FROM users WHERE email = ? LIMIT 1", [email], (error, results, fields) => {
                 if (error) {
                     reject(error);
                 } else if (results.length !== 1) {
                     reject("User not found");
                 } else {
-                    resolve(new user(results[0]));
+                    if (bcrypt.compareSync(password, results[0].password)) {
+                        resolve(new user(results[0]));
+                    } else {
+                        reject("User not found");
+                    }
                 }
             });
         });

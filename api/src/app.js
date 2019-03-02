@@ -27,7 +27,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(config.secret));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(cors({ origin: '*' }));
+app.use(cors({
+    origin: true,
+    credentials: true,
+}));
 app.use(frameguard())  // defaults to sameorigin
 
 app.use('/', indexRouter);

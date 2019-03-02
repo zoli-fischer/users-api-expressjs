@@ -2,7 +2,13 @@ import { connect } from 'react-redux';
 import Users from 'Pages/Users/Users';
 import { clearData } from 'Actions/SessionUser';
 
-const mapDispatchToProps = (dispatch) => {
+function mapStateToProps(state) {
+    return {
+        sessionUser: state.sessionUser.data,
+    };
+};
+
+function mapDispatchToProps(dispatch) {
     return {
         onLogout: (data) => {
             dispatch(clearData());
@@ -11,6 +17,6 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps,
 )(Users);

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const config = require('../config');
 const database = require('../database');
 
@@ -13,7 +14,10 @@ class user {
 
     createAuthToken() {
         return jwt.sign(
-            { id: this.data.id },
+            { 
+                id: this.data.id,
+                password: this.data.password,
+            },
             config.secret,
             { expiresIn: config.authToken.expires }
         );
@@ -25,7 +29,11 @@ class user {
             const values = [];
             Object.keys(data).forEach(key => {
                 fields.push('`' + key + '` = ?');
-                values.push(data[key]);
+                if (key === 'password') {
+                    values.push(bcrypt.hashSync(data[key], 10));
+                } else {
+                    values.push(data[key]);
+                }
             });
             values.push(this.data.id);
             database().query("UPDATE users SET " + fields.join(",") + " WHERE id = ?", values, (error, results, fields) => {

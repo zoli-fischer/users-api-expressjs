@@ -7,7 +7,7 @@ const router = express.Router();
 
 /* Get user authToken */
 router.get('/', (req, res, next) => {
-    const authToken = req.signedCookies[config.authToken.cookieName];
+    const authToken = req.cookies[config.authToken.cookieName];
     jwt.verify(authToken, config.secret, (error, decoded) => {
         if (error) {
             response.error(res, 500, "Failed to authenticate token.");
@@ -17,8 +17,9 @@ router.get('/', (req, res, next) => {
                     // renew authToken cookie
                     res.cookie(config.authToken.cookieName, authToken, { 
                         expires: new Date(Date.now() + config.authToken.cookieExpires), // expires in 14 day
-                        httpOnly: true,
-                        signed: true,
+                        httpOnly: false,
+                        signed: false,
+                        secure: false,
                     });
                     response.success(res, {
                         [config.authToken.cookieName]: authToken, 
@@ -42,8 +43,9 @@ router.post('/', (req, res, next) => {
 
         res.cookie(config.authToken.cookieName, authToken, { 
             expires: new Date(Date.now() + config.authToken.cookieExpires), // expires in 14 day
-            httpOnly: true,
-            signed: true,
+            httpOnly: false,
+            signed: false,
+            secure: false,
         });
 
         response.success(res, {
@@ -60,8 +62,9 @@ router.post('/', (req, res, next) => {
 router.delete('/', (req, res, next) => {
     res.cookie(config.authToken.cookieName, "", {
         expires: new Date(Date.now() - 1), // set expired
-        httpOnly: true,
-        signed: true,
+        httpOnly: false,
+        signed: false,
+        secure: false,
     });
     response.success(res);
 });
