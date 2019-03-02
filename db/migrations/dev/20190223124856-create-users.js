@@ -1,5 +1,7 @@
 'use strict';
 
+var bcrypt = require('bcrypt');
+
 var dbm;
 var type;
 var seed;
@@ -15,7 +17,7 @@ exports.setup = function(options, seedLink) {
 };
 
 exports.up = function(db, callback) {
-  db.runSql('INSERT INTO users (email, password) VALUES (?, PASSWORD(?))', ['test@test.com', 'password'], callback);
+  db.runSql('INSERT INTO users (email, password) VALUES (?, ?)', ['test@test.com', bcrypt.hashSync('password', 10)], callback);
 };
 
 exports.down = function(db, callback) {

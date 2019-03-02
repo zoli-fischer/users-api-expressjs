@@ -4,9 +4,7 @@ const config = require('./config');
 const users = require('./classes/users');
 
 module.exports = (req, res, next) => {
-    console.log(req.cookies);
-    const authToken = req.cookies[config.authToken.cookieName];
-    console.log(req.headers.authorization, "Bearer " + authToken);
+    const authToken = req.signedCookies[config.authToken.cookieName];
     if ( req.headers.authorization === "Bearer " + authToken ) {
         jwt.verify(authToken, config.secret, (err, decoded) => {
             if (err) {
@@ -18,8 +16,8 @@ module.exports = (req, res, next) => {
                         // renew authToken cookie
                         res.cookie(config.authToken.cookieName, authToken, { 
                             expires: new Date(Date.now() + config.authToken.cookieExpires), // expires in 14 day
-                            httpOnly: false,
-                            signed: false,
+                            httpOnly: true,
+                            signed: true,
                             secure: false,
                         });
                         next();
